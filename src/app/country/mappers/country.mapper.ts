@@ -1,0 +1,27 @@
+import type { Country } from "../components/interfaces/country.interface";
+import type { RESTCountry } from "../components/interfaces/rest-countries.interfaces";
+
+
+
+export class CountryMapper {
+
+  // static RestCountry => Country
+  static mapRestCountryToCountry(restCountry: RESTCountry): Country {
+    return {
+      capital: restCountry.capital.join(', '),
+      cca2: restCountry.cca2,
+      flag: restCountry.flag,
+      flagSvg: restCountry.flags.svg,
+      name: restCountry.name.common,
+      population: restCountry.population,
+    };
+  }
+
+  // static RestCountry[] => Country[]
+  static mapRestCountriesArrayToCountriesArray(restCountries: RESTCountry[]): Country[] {
+
+    // return restCountries.map((country) => this.mapRestCountryToCountry(country));
+    // OR Is the same as:
+    return restCountries.map(this.mapRestCountryToCountry);
+  }
+}
