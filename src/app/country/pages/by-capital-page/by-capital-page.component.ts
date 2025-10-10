@@ -1,32 +1,64 @@
-import { Component, inject, signal } from '@angular/core';
-import { SearchInputComponent } from "../../components/search-input/search-input.component";
-import { CountryListComponent } from "../../components/country-list/country-list.component";
+import { Component, inject, resource, signal } from '@angular/core';
+import { SearchInputComponent } from '../../components/search-input/search-input.component';
+import { CountryListComponent } from '../../components/country-list/country-list.component';
 import { CountryService } from '../../services/country.service';
-import { Country } from '../../components/interfaces/country.interface';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-by-capital-page',
   imports: [SearchInputComponent, CountryListComponent],
   templateUrl: './by-capital-page.component.html',
 })
-export class ByCapitalPageComponent { 
-
+export class ByCapitalPageComponent {
   countryService = inject(CountryService);
 
-  isLoading = signal<boolean>(false);
-  isError = signal<string | null>(null);
-  countries = signal<Country[]>([]);
+  // Este trozo de código reemplaza todo el código comentado al final
+  // y usa resource para manejar la carga de datos, errores y estados de carga automáticamente.
+  // La función loader se encarga de hacer la petición y devolver los datos.
+  // La propiedad request se usa para pasar parámetros a la función loader.
+  // El template se actualiza automáticamente cuando cambian los datos.
+  // Si no hay query, devuelve un array vacío.
+  // Si hay query, llama al servicio para buscar países por capital.
+  // Usa firstValueFrom para convertir el Observable en una Promise y esperar su resultado.
+  query = signal('');
 
-  onSearch(query: string): void {
-    if(this.isLoading()) return;
+  countryResource = resource({
+    request: () => ({query: this.query()}),
 
-    this.isLoading.set(true);
-    this.isError.set(null);
+    loader: async({ request }) => {
+      if(!request.query) return [];
 
-    this.countryService.searchByCapital(query)
-      .subscribe(countries => {
-        this.countries.set(countries);
-        this.isLoading.set(false);
-      });
-  }
+      return await firstValueFrom(
+        this.countryService.searchByCapital(request.query)
+
+      )
+      
+
+    }
+  })
+  // Fin del código con resource
+
+  /* ************* */
+  // isLoading = signal<boolean>(false);
+  // isError = signal<string | null>(null);
+  // countries = signal<Country[]>([]);
+
+  // onSearch(query: string): void {
+  //   if (this.isLoading()) return;
+
+  //   this.isLoading.set(true);
+  //   this.isError.set(null);
+
+  //   this.countryService.searchByCapital(query).subscribe({
+  //     next: (countries) => {
+  //       this.isLoading.set(false);
+  //       this.countries.set(countries);
+  //     },
+  //     error: (err) => {
+  //       this.isLoading.set(false);
+  //       this.countries.set([]);
+  //       this.isError.set(err.message);
+  //     }
+  //   });
+  // }
 }
