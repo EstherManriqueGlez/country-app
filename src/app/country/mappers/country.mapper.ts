@@ -1,5 +1,5 @@
-import type { Country } from "../components/interfaces/country.interface";
-import type { RESTCountry } from "../components/interfaces/rest-countries.interfaces";
+import type { Country } from "../interfaces/country.interface";
+import type { RESTCountry } from "../interfaces/rest-countries.interfaces";
 
 
 
