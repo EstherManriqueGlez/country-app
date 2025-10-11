@@ -8,7 +8,10 @@ import { RouterLink } from '@angular/router';
   imports: [DecimalPipe, RouterLink],
   templateUrl: './country-list.component.html',
 })
-export class CountryListComponent { 
-
+export class CountryListComponent {
   countries = input.required<Country[]>();
+
+  errorMessage = input<string | unknown | null>();
+  isLoading = input<boolean>(false);
+  isEmpty = input<boolean>(false);
 }

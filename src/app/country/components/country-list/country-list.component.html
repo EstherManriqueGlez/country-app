@@ -13,29 +13,49 @@
     </thead>
     <tbody>
       @for (country of countries(); track country.cca2; let index = $index) {
-        <tr>
-          <td>{{ index + 1 }}</td>
-          <td>{{ country.flag }}</td>
-          <td>
-            <img
-              [src]="country.flagSvg"
-              [alt]="country.name"
-              class="w-10"
-            />
-          </td>
-          <td>{{ country.name }}</td>
-          <td>{{ country.capital }}</td>
-          <td>
-            <span class="badge bg-secondary">
-              {{ country.population | number}}
-            </span>
-          </td>
-          <td>
-            <a 
+      <tr>
+        <td>{{ index + 1 }}</td>
+        <td>{{ country.flag }}</td>
+        <td>
+          <img [src]="country.flagSvg" [alt]="country.name" class="w-10" />
+        </td>
+        <td>{{ country.name }}</td>
+        <td>{{ country.capital }}</td>
+        <td>
+          <span class="badge bg-secondary">
+            {{ country.population | number }}
+          </span>
+        </td>
+        <td>
+          <a
             [routerLink]="['/country/by', country.cca2]"
-            class="link-primary cursor-pointer">More Info</a>
-          </td>
-        </tr>
+            class="link-primary cursor-pointer"
+            >More Info</a
+          >
+        </td>
+      </tr>
+      }
+      <!--  -->
+      @if(errorMessage()) {
+      <tr>
+        <td colspan="8" class="text-center">
+          {{ errorMessage() }}
+        </td>
+      </tr>
+      }
+
+      <!--  -->
+      @if(countries().length === 0 && !isLoading() && !errorMessage()) {
+      <tr>
+        <td colspan="8" class="text-center">No found results</td>
+      </tr>
+      }
+
+      <!--  -->
+      @if(isLoading()) {
+      <tr>
+        <td colspan="8" class="text-center">Loading...</td>
+      </tr>
       }
     </tbody>
   </table>
