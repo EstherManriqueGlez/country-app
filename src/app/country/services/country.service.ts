@@ -30,7 +30,7 @@ export class CountryService {
     );
   }
 
-  searchByCountry(query: string): Observable<Country[]> {
+  searchByCountry(query: string) {
     const url = `${API_URL}/name/${query}`;
 
     query = query.toLowerCase();
@@ -45,6 +45,24 @@ export class CountryService {
 
         return throwError(
           () => new Error(`Failed to fetch countries by name: ${query}`)
+        );
+      })
+    );
+  }
+
+  searchByCountryByAlphaCode(code: string) {
+    const url = `${API_URL}/alpha/${code}`;
+
+    return this.http.get<RESTCountry[]>(url).pipe(
+      map((restCountries) =>
+        CountryMapper.mapRestCountriesArrayToCountriesArray(restCountries)
+      ),
+      map((countries) => countries.at(0)),
+      catchError((error) => {
+        console.error('Error fetching countries by alpha code:', error);
+
+        return throwError(
+          () => new Error(`Failed to fetch countries by alpha code: ${code}`)
         );
       })
     );
