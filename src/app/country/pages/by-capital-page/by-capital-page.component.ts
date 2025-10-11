@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, linkedSignal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import {  of } from 'rxjs';
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
@@ -12,6 +13,14 @@ import { CountryService } from '../../services/country.service';
 })
 export class ByCapitalPageComponent {
   countryService = inject(CountryService);
+  
+  activatedRoute = inject(ActivatedRoute);
+  router = inject(Router)
+  queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? '';
+
+  // Inicializa el linkedSignal con el valor del query param si existe
+  // para que si se recarga la página mantenga el valor buscado
+  query = linkedSignal(() => this.queryParam);
 
   // Este trozo de código reemplaza todo el código comentado al final
   // y usa resource para manejar la carga de datos, errores y estados de carga automáticamente.
@@ -21,8 +30,6 @@ export class ByCapitalPageComponent {
   // Si no hay query, devuelve un array vacío.
   // Si hay query, llama al servicio para buscar países por capital.
   // Usa firstValueFrom para convertir el Observable en una Promise y esperar su resultado.
-  query = signal('');
-
 
   // Es mejor con rxResource!!
   countryResource = rxResource({
@@ -30,6 +37,12 @@ export class ByCapitalPageComponent {
 
     loader: ({ request }) => {
       if (!request.query) return of([]);
+
+      this.router.navigate(['/country/by-capital'], {
+        queryParams: {
+          query: request.query,
+        }
+      });
 
       return this.countryService.searchByCapital(request.query);
     },
